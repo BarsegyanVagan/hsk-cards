@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <title>HSK 2 · Карточки</title>
+  <meta name="description" content="Флешкарточки для заучивания китайских слов HSK 2. Работает офлайн.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f4f3fa" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0e0e16" media="(prefers-color-scheme: dark)">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="HSK 2">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="format-detection" content="telephone=no">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="64x64" href="icons/favicon-64.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/styles.css">
+  <script type="module" src="js/app.js"></script>
+</head>
+<body>
+<main class="app" id="app">
+
+  <!-- 1. Приветствие -->
+  <section class="screen screen-welcome" data-screen="welcome">
+    <div class="welcome">
+      <div class="logo" aria-hidden="true"><span lang="zh-CN">学</span></div>
+      <h1 class="welcome-title">Привет, добро пожаловать!</h1>
+      <p class="welcome-text">Карточки для заучивания китайских слов HSK&nbsp;2. Смотри на иероглиф, вспоминай произношение и перевод, переворачивай карточку и честно отмечай, получилось ли.</p>
+      <p class="welcome-stats" id="welcome-stats">Загружаю слова…</p>
+      <div class="welcome-actions">
+        <button type="button" class="btn btn-primary btn-lg" id="btn-start">Тренироваться</button>
+        <button type="button" class="btn btn-secondary btn-lg" id="btn-history">История</button>
+      </div>
+      <button type="button" class="btn btn-ghost install-btn" id="btn-install" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
+        Установить приложение
+      </button>
+      <div class="ios-hint" id="ios-hint" hidden>
+        <p>Установи на экран «Домой»: нажми
+          <svg class="inline-icon" viewBox="0 0 24 24" aria-label="Поделиться"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/></svg>
+          «Поделиться», затем «На экран „Домой“».</p>
+        <button type="button" class="icon-btn icon-btn-sm" id="ios-hint-close" aria-label="Скрыть подсказку">
+          <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Меню тренировки -->
+  <section class="screen" data-screen="menu" hidden>
+    <header class="topbar">
+      <button type="button" class="icon-btn" data-action="back" aria-label="Назад">
+        <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <h1>Тренировка</h1>
+      <div class="topbar-actions">
+        <button type="button" class="icon-btn" data-action="history" aria-label="История" title="История">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        </button>
+        <button type="button" class="icon-btn sound-toggle" aria-label="Звук"></button>
+      </div>
+    </header>
+
+    <button type="button" class="combo-card" id="btn-combo">
+      <span class="combo-card-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3 13l9 5 9-5"/></svg>
+      </span>
+      <span class="combo-card-text">
+        <strong>Комбинированный</strong>
+        <small>Выбери уроки и отдельные слова</small>
+      </span>
+      <svg class="combo-card-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+    </button>
+
+    <h2 class="section-title">Уроки</h2>
+    <div class="lesson-grid" id="lesson-grid"></div>
+  </section>
+
+  <!-- 3. Комбинированный: выбор слов -->
+  <section class="screen screen-combo" data-screen="combo" hidden>
+    <header class="topbar">
+      <button type="button" class="icon-btn" data-action="back" aria-label="Назад">
+        <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <h1>Комбинированный</h1>
+    </header>
+    <p class="screen-lead">Отметь уроки целиком или раскрой урок и выбери отдельные слова.</p>
+    <div class="combo-toolbar">
+      <button type="button" class="chip-btn" id="combo-all">Выбрать всё</button>
+      <button type="button" class="chip-btn" id="combo-none">Снять всё</button>
+    </div>
+    <ul class="combo-list" id="combo-list"></ul>
+    <div class="combo-bar">
+      <button type="button" class="btn btn-primary btn-lg btn-block" id="combo-start" disabled>
+        Начать <span class="count-badge" id="combo-start-count">0</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- 4. Тест -->
+  <section class="screen screen-test" data-screen="test" hidden>
+    <header class="topbar test-topbar">
+      <button type="button" class="icon-btn" data-action="exit-test" aria-label="Выйти из теста" title="Выйти (Esc)">
+        <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+      <div class="test-heading">
+        <span class="test-title" id="test-title"></span>
+        <span class="test-progress-text" id="test-progress-text"></span>
+      </div>
+      <button type="button" class="icon-btn sound-toggle" aria-label="Звук"></button>
+    </header>
+    <div class="progress" id="progress" role="progressbar" aria-label="Прогресс теста" aria-valuemin="0">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
+
+    <div class="card-stage">
+      <div class="card" id="card" role="button" tabindex="0" aria-label="Карточка. Нажмите, чтобы перевернуть">
+        <div class="card-inner">
+          <div class="card-face card-front" id="card-front">
+            <span class="card-chip"></span>
+            <div class="card-hanzi" id="card-hanzi" lang="zh-CN"></div>
+            <div class="card-hint">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 0115.5-6.2L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 01-15.5 6.2L3 16"/><path d="M3 21v-5h5"/></svg>
+              <span>Нажми, чтобы перевернуть<span class="kbd-hint"> · Пробел</span></span>
+            </div>
+          </div>
+          <div class="card-face card-back" id="card-back" aria-hidden="true">
+            <span class="card-chip"></span>
+            <div class="card-hanzi-small" id="card-hanzi-back" lang="zh-CN"></div>
+            <div class="card-pinyin" id="card-pinyin"></div>
+            <div class="card-divider" aria-hidden="true"></div>
+            <div class="card-translation" id="card-translation"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="answer-bar">
+      <button type="button" class="answer-btn bad" id="btn-wrong" disabled>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        Неверно <span class="kbd" aria-hidden="true">←</span>
+      </button>
+      <button type="button" class="answer-btn ok" id="btn-right" disabled>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+        Верно <span class="kbd" aria-hidden="true">→</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- 5. Результат -->
+  <section class="screen screen-result" data-screen="result" hidden>
+    <div class="result-hero" id="result-hero">
+      <div class="ring">
+        <svg viewBox="0 0 120 120" aria-hidden="true">
+          <circle class="ring-track" cx="60" cy="60" r="52"/>
+          <circle class="ring-fill" id="ring-fill" cx="60" cy="60" r="52"/>
+        </svg>
+        <div class="ring-label"><span><span id="result-percent">0</span><small>%</small></span></div>
+      </div>
+      <h1 class="result-message" id="result-message"></h1>
+      <p class="result-sub" id="result-sub"></p>
+      <div class="result-stats">
+        <div class="stat ok"><b id="result-correct">0</b><span>верно</span></div>
+        <div class="stat bad"><b id="result-wrong">0</b><span>неверно</span></div>
+      </div>
+      <div class="claude-badge" id="claude-badge" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8z"/></svg>
+        Сделано с поддержкой Claude
+      </div>
+    </div>
+    <div class="result-actions">
+      <button type="button" class="btn btn-primary" id="btn-repeat">Повторить</button>
+      <button type="button" class="btn btn-secondary" id="btn-repeat-mistakes">Повторить только ошибки</button>
+      <button type="button" class="btn btn-ghost" id="btn-to-menu">В меню</button>
+    </div>
+    <h2 class="section-title" id="mistakes-title">Ошибки</h2>
+    <ul class="word-list" id="mistakes-list"></ul>
+  </section>
+
+  <!-- 6. История -->
+  <section class="screen" data-screen="history" hidden>
+    <header class="topbar">
+      <button type="button" class="icon-btn" data-action="back" aria-label="Назад">
+        <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <h1>История</h1>
+    </header>
+    <div class="avg-card">
+      <div>
+        <div class="avg-label">Средний результат</div>
+        <div class="avg-sub" id="avg-sub"></div>
+      </div>
+      <div class="avg-value" id="avg-value">—</div>
+    </div>
+    <ul class="history-list" id="history-list"></ul>
+    <div class="empty" id="history-empty" hidden>
+      <p>Здесь появятся результаты пройденных тестов.</p>
+      <button type="button" class="btn btn-primary" id="btn-empty-start">Начать тренировку</button>
+    </div>
+    <button type="button" class="btn btn-danger-ghost btn-block" id="btn-clear-history" hidden>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>
+      Очистить историю
+    </button>
+  </section>
+
+</main>
+
+<div class="modal" id="modal" hidden>
+  <div class="modal-backdrop" id="modal-backdrop"></div>
+  <div class="modal-dialog" role="alertdialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-text">
+    <h2 id="modal-title"></h2>
+    <p id="modal-text"></p>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-secondary" id="modal-cancel"></button>
+      <button type="button" class="btn btn-primary" id="modal-ok"></button>
+    </div>
+  </div>
+</div>
+
+<div class="sr-only" id="live" aria-live="polite"></div>
+<noscript><p class="noscript">Для работы приложения нужен включённый JavaScript.</p></noscript>
+</body>
+</html>

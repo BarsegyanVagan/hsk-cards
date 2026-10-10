@@ -1,0 +1,19 @@
+{
+  "id": "./",
+  "name": "HSK 2 — карточки",
+  "short_name": "HSK 2",
+  "description": "Флешкарточки для заучивания китайских слов HSK 2. Работает офлайн.",
+  "lang": "ru",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f3fa",
+  "theme_color": "#f4f3fa",
+  "categories": ["education"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
